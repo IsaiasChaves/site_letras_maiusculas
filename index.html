@@ -3,95 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transformador de Texto</title>
+    <title>Transformador de Texto Pro</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f2f5;
-        }
-        .container {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-            width: 90%;
-            max-width: 700px;
-        }
-        h2 {
-            color: #333;
-            margin-top: 0;
-            text-align: center;
-        }
-        textarea {
-            width: 100%;
-            height: 250px;
-            padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            box-sizing: border-box;
-            resize: vertical;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-        textarea:focus {
-            border-color: #007bff;
-        }
-        .button-group {
-            margin-top: 1.5rem;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-        }
-        button {
-            padding: 12px 24px;
-            font-size: 14px;
-            font-weight: bold;
-            text-transform: uppercase;
-            cursor: pointer;
-            border: none;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-        }
-        .btn-convert { background-color: #007bff; color: white; }
-        .btn-convert:hover { background-color: #0056b3; }
-        
-        .btn-copy { background-color: #28a745; color: white; }
-        .btn-copy:hover { background-color: #218838; }
-
-        .btn-clear { background-color: #dc3545; color: white; }
-        .btn-clear:hover { background-color: #c82333; }
-
-        /* Estilo para o aviso de copiado */
-        #status {
-            text-align: center;
-            height: 20px;
-            margin-top: 10px;
-            font-size: 14px;
-            color: #28a745;
-            font-weight: bold;
-        }
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background-color: #f0f2f5; }
+        .container { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); width: 90%; max-width: 700px; }
+        textarea { width: 100%; height: 250px; padding: 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; resize: vertical; outline: none; }
+        .button-group { margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+        button { padding: 12px 20px; font-size: 13px; font-weight: bold; cursor: pointer; border: none; border-radius: 6px; transition: 0.2s; text-transform: uppercase; }
+        .btn-blue { background-color: #007bff; color: white; }
+        .btn-green { background-color: #28a745; color: white; }
+        .btn-orange { background-color: #fd7e14; color: white; }
+        .btn-gray { background-color: #6c757d; color: white; }
+        .btn-red { background-color: #dc3545; color: white; }
+        #status { text-align: center; height: 20px; margin-top: 10px; font-size: 14px; color: #28a745; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Transformador de Maiúsculas</h2>
-    <textarea id="texto" placeholder="Cole ou digite seu texto aqui..."></textarea>
-    
+    <h2 style="text-align: center;">Modificador de Texto</h2>
+    <textarea id="texto" placeholder="Cole seu texto aqui..."></textarea>
     <div id="status"></div>
-
     <div class="button-group">
-        <button class="btn-convert" onclick="transformar()">Transformar em Maiúsculas</button>
-        <button class="btn-copy" onclick="copiar()">Copiar Texto</button>
-        <button class="btn-clear" onclick="limpar()">Limpar</button>
+        <button class="btn-blue" onclick="transformar()">MAIÚSCULAS</button>
+        <button class="btn-blue" onclick="minusculas()">minúsculas</button>
+        <button class="btn-orange" onclick="limparFormatacao()">Limpar Pontos/Acentos</button>
+        <button class="btn-green" onclick="copiar()">Copiar</button>
+        <button class="btn-red" onclick="limpar()">Limpar Tudo</button>
     </div>
 </div>
 
@@ -101,35 +39,38 @@
 
     function transformar() {
         areaTexto.value = areaTexto.value.toUpperCase();
-        statusDiv.innerText = "Transformado!";
-        setTimeout(() => statusDiv.innerText = "", 2000);
+        mostrarStatus("Texto em MAIÚSCULAS!");
+    }
+
+    function minusculas() {
+        areaTexto.value = areaTexto.value.toLowerCase();
+        mostrarStatus("Texto em minúsculas!");
+    }
+
+    function limparFormatacao() {
+        let texto = areaTexto.value;
+        texto = texto.normalize('NFD').replace(/[\u0300-\u036f]/g, ""); // Remove acentos
+        texto = texto.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, ""); // Remove pontuação
+        areaTexto.value = texto;
+        mostrarStatus("Pontos e acentos removidos!");
     }
 
     function copiar() {
-        if (areaTexto.value.length === 0) {
-            statusDiv.style.color = "#dc3545";
-            statusDiv.innerText = "Nada para copiar!";
-            setTimeout(() => statusDiv.innerText = "", 2000);
-            return;
-        }
-
-        // Seleciona e copia o texto
+        if (!areaTexto.value) return;
         areaTexto.select();
-        areaTexto.setSelectionRange(0, 99999); // Para dispositivos móveis
         navigator.clipboard.writeText(areaTexto.value);
-
-        // Feedback visual
-        statusDiv.style.color = "#28a745";
-        statusDiv.innerText = "Copiado com sucesso!";
-        setTimeout(() => statusDiv.innerText = "", 2000);
+        mostrarStatus("Copiado com sucesso!");
     }
 
     function limpar() {
         areaTexto.value = '';
         statusDiv.innerText = "";
     }
-</script>
 
+    function mostrarStatus(msg) {
+        statusDiv.innerText = msg;
+        setTimeout(() => statusDiv.innerText = "", 2000);
+    }
+</script>
 </body>
 </html>
-
